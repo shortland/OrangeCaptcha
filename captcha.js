@@ -1,3 +1,6 @@
+$(window).ready(function(){
+	fetch_img();
+});
 function fetch_img()
 {
 	$("#captcha_holder").load("captcha.pl");
@@ -18,15 +21,15 @@ function captcha_click(idn)
 		
 		if(got_one_cap == idn)
 		{
-			localStorage.removeItem('captcha_sub1')
+			localStorage.removeItem('captcha_sub1');
 		}
 		if(got_two_cap == idn)
 		{
-			localStorage.removeItem('captcha_sub2')
+			localStorage.removeItem('captcha_sub2');
 		}
 		if(got_three_cap == idn)
 		{
-			localStorage.removeItem('captcha_sub3')
+			localStorage.removeItem('captcha_sub3');
 		}
 	}
 	else 

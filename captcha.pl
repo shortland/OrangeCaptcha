@@ -21,7 +21,7 @@ if(!defined $method)
 		my $image_name;
 		$image_name .= $characters[rand @characters] for 1..24;
 		$image_name = $image_name."ZIM";
-		$dbh = DBI->connect("DBI:mysql:database=DATABASE;host=localhost", "USERNAME", "PASSWORD") or die "Could not connect";
+		$dbh = DBI->connect("DBI:mysql:database=database;host=localhost", "username", "password") or die "Could not connect";
 		my $sqlh = $dbh->prepare("SELECT * FROM captcha WHERE idn = ?");
 		$sqlh->execute($rand);
 		while (my $row = $sqlh->fetchrow_hashref())
@@ -37,7 +37,7 @@ if(!defined $method)
 			my $sqlh2 = $dbh->prepare("INSERT INTO `captcha_keys` (`name`, `key`) VALUES (?, ?);");
 			$sqlh2->execute($type_of, $image_name);
 		
-			$data = `curl -s 'http://example.com/captcha_easy/${rand}.png'`;
+			$data = `curl -s 'http://example.com/demo/OrangeCaptcha/captcha_easy/${rand}.png'`;
 			open($fh, '>', 'captcha/'.$image_name.'.png');
 			print $fh $data;
 			close $fh;
