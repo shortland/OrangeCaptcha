@@ -19,9 +19,12 @@ BEGIN {
 	my $cgi = CGI->new;
 	print $cgi->header(-status => '200 OK', -type => 'text');
 	my $false = 0;
+	my $count = 0;
 	foreach my $c ($cgi->param("captcha1"), $cgi->param("captcha2"), $cgi->param("captcha3")) {
 		$false = 1 if check_key($c);
+		$count++;
 	}
+	$false = 1 if $count ne 3;
 	if ($false) {
 		print "Error";
 	}
