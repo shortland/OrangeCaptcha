@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>Orange Captcha</title>
-	<script src='jquery.js'></script>
-	<script src='captcha.js'></script>
-	<link rel="stylesheet" type="text/css" href="captcha.css">
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi"/>
+	<script src='js/jquery.js'></script>
+	<script src='js/captcha.js'></script>
+	<link rel="stylesheet" type="text/css" href="css/captcha.css"/>
 </head>
-<body>
-	<button type='button' onClick='fetch_img()' style='width:70px;height:22px;'>Refresh</button>
+<body bgcolor="#fff">
+	<button type='button' onClick='captcha_getnew()' style='width:70px;height:22px;'>Refresh</button>
 	
-	<p style='color:white !important;'>Click the oranges</p>
+	<p style='color:black;'>Click the oranges</p>
 	
 	<div id='captcha_holder'></div>
+
+	</br>
+
+	<button type='button' onClick='captcha_submit()' style='width:70px;height:22px;'>Submit</button>
+
+	<p style='color:black;' id="captcha_res"></p>
 </body>
 </html>
 

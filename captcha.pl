@@ -1,51 +1,35 @@
 #!/usr/bin/perl
 
+use strict;
+use warnings;
 use CGI;
 use DBI;
 use List::Util 'shuffle';
 
-BEGIN
-{
-	$cgi = new CGI;
-	$key = $cgi->param('key');
-	$method = $cgi->param('method');
-	print $cgi->header(-status=> '200 OK', -type => 'text/html');
-   	open(STDERR, ">&STDOUT");
-}
-
-if(!defined $method)
-{
-	for $rand(1..6)
-	{
-		@characters = ("A".."Z", "a".."z", "0".."9");
-		my $image_name;
-		$image_name .= $characters[rand @characters] for 1..24;
-		$image_name = $image_name."ZIM";
-		$dbh = DBI->connect("DBI:mysql:database=database;host=localhost", "username", "password") or die "Could not connect";
-		my $sqlh = $dbh->prepare("SELECT * FROM captcha WHERE idn = ?");
-		$sqlh->execute($rand);
-		while (my $row = $sqlh->fetchrow_hashref())
-		{
-			if($rand =~ "1" || $rand =~ "3" || $rand =~ "5")
-			{
-				$type_of = "orange";
-			}
-			if($rand =~ "2" || $rand =~ "4" || $rand =~ "6")
-			{
-				$type_of = "fish";
-			}
-			my $sqlh2 = $dbh->prepare("INSERT INTO `captcha_keys` (`name`, `key`) VALUES (?, ?);");
-			$sqlh2->execute($type_of, $image_name);
-		
-			$data = `curl -s 'http://example.com/demo/OrangeCaptcha/captcha_easy/${rand}.png'`;
-			open($fh, '>', 'captcha/'.$image_name.'.png');
-			print $fh $data;
-			close $fh;
+sub print_images {
+	my (@types) = @_;
+	my $dbh = DBI->connect("DBI:mysql:database=dbname;host=localhost", "root", "password") or die "Could not connect";
+	my @full_list;
+	foreach my $type (@types) {
+		my $sqlh = $dbh->prepare("SELECT * FROM `captcha` WHERE `type` = ? ORDER BY RAND() LIMIT 3");
+		$sqlh->execute($type);
+		while (my $row = $sqlh->fetchrow_hashref()) {
+			my @characters = ("A".."Z", "a".."z", "0".."9");
+			my $random;
+			$random .= $characters[rand @characters] for 1..24;
+			my $sqlh2 = $dbh->prepare("INSERT INTO `captcha_keys` (`name`, `key`, `imgid`, time) VALUES (?, ?, ?, ?);");
+			$sqlh2->execute($row->{type}, $random, $row->{idn}, time);
+			push (@full_list, "<img src='" . $row->{base64img} . "' id='$random' class='captcha_imgs' onClick='captcha_click(this.id)'> ");
 		}
 		$dbh->disconnect();
-		
-		push (@full_list, "<img src='captcha/".$image_name.".png' style='background-color:blue;width:50px;height:50px;border:1px solid black; display:inline-block;' id='$image_name' class='captcha_imgs' onClick='captcha_click(this.id)'>");
 	}
-	print shuffle @full_list;
-exit;
+	return shuffle @full_list;
+}
+
+BEGIN {
+	my $cgi = CGI->new;
+	print $cgi->header(-status=> '200 OK', -type => 'text/html');
+   	open(STDERR, ">&STDOUT");
+	my @types = ("orange", "fish");
+   	print print_images(@types);
 }
